@@ -11,7 +11,7 @@ interface Crypto {
   symbol: string;
   name: string;
   current_price: number;
-  price_change_percentage_30d: number;
+  price_change_percentage_24h: number;
   image: string;
 }
 
@@ -24,9 +24,14 @@ export const TopCryptos = () => {
       try {
         setIsLoading(true);
         const data = await getTopCryptos();
-        setCryptos(data);
+        if (data) {
+          setCryptos(data);
+        } else {
+          throw new Error('No se recibieron datos');
+        }
       } catch (error) {
-        console.error('Failed to fetch cryptocurrencies:', error);
+        console.error('Error al obtener criptomonedas:', error);
+        setCryptos([]);
       } finally {
         setIsLoading(false);
       }
@@ -59,15 +64,15 @@ export const TopCryptos = () => {
           ${crypto.current_price.toLocaleString()}
         </p>
         <div className="flex items-center space-x-2">
-          {crypto.price_change_percentage_30d > 0 ? (
+          {crypto.price_change_percentage_24h > 0 ? (
             <TrendingUp className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 text-green-400" />
           ) : (
             <TrendingDown className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 text-red-400" />
           )}
           <span
-            className={`text-[10px] sm:text-xs md:text-sm font-semibold ${crypto.price_change_percentage_30d > 0 ? 'text-green-400' : 'text-red-400'}`}
+            className={`text-[10px] sm:text-xs md:text-sm font-semibold ${crypto.price_change_percentage_24h > 0 ? 'text-green-400' : 'text-red-400'}`}
           >
-            {crypto.price_change_percentage_30d.toFixed(2)}%
+            {crypto.price_change_percentage_24h.toFixed(2)}%
           </span>
         </div>
       </div>
