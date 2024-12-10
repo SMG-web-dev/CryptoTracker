@@ -11,8 +11,13 @@ interface CoinGeckoMarketData {
   current_price: number;
   market_cap: number;
   circulating_supply: number;
+  total_supply: number;
+  max_supply: number;
   total_volume: number;
   price_change_percentage_24h: number;
+  ath: number;
+  ath_change_percentage: number;
+  ath_date: string;
 }
 
 interface CoinGeckoSearchResult {
@@ -34,7 +39,7 @@ export const getBitcoinData = async () => {
       axios.get(`${COINGECKO_API}/coins/bitcoin/market_chart`, {
         params: {
           vs_currency: 'usd',
-          days: 30,
+          days: 365,
           interval: 'daily'
         }
       })
@@ -72,7 +77,6 @@ export const getTopCryptos = async (): Promise<CryptoData[]> => {
       }
     });
 
-    // Explicitly map and serialize the response data
     return response.data.map((crypto: CoinGeckoMarketData) => ({
       id: String(crypto.id),
       symbol: String(crypto.symbol),
@@ -81,8 +85,13 @@ export const getTopCryptos = async (): Promise<CryptoData[]> => {
       current_price: Number(crypto.current_price),
       market_cap: Number(crypto.market_cap),
       circulating_supply: Number(crypto.circulating_supply),
+      total_supply: Number(crypto.total_supply),
+      max_supply: Number(crypto.max_supply),
       total_volume: Number(crypto.total_volume),
-      price_change_percentage_24h: Number(crypto.price_change_percentage_24h)
+      price_change_percentage_24h: Number(crypto.price_change_percentage_24h),
+      ath: Number(crypto.ath),
+      ath_change_percentage: Number(crypto.ath_change_percentage),
+      ath_date: String(crypto.ath_date)
     }));
   } catch (error) {
     console.error('Error fetching top cryptos:', error);
@@ -118,8 +127,13 @@ export const searchCryptos = async (query: string): Promise<CryptoData[]> => {
       current_price: Number(crypto.current_price),
       market_cap: Number(crypto.market_cap),
       circulating_supply: Number(crypto.circulating_supply),
+      total_supply: Number(crypto.total_supply),
+      max_supply: Number(crypto.max_supply),
       total_volume: Number(crypto.total_volume),
-      price_change_percentage_24h: Number(crypto.price_change_percentage_24h)
+      price_change_percentage_24h: Number(crypto.price_change_percentage_24h),
+      ath: Number(crypto.ath),
+      ath_change_percentage: Number(crypto.ath_change_percentage),
+      ath_date: String(crypto.ath_date)
     }));
   } catch (error) {
     console.error('Error searching cryptos:', error);
@@ -145,3 +159,4 @@ export const getWalletBalance = async (
     }))
   };
 };
+

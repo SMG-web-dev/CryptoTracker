@@ -1,26 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { SlidersHorizontal } from 'lucide-react';
 import { getTopCryptos, searchCryptos } from '../services/api';
+import { CryptoData, FilterState } from '../types/crypto';
+import SearchBar from '../components/Explorer/SearchBar';
+import FilterSection from '../components/Explorer/FilterSection';
+import CryptoCard from '../components/Explorer/CryptoCard';
 
-interface Crypto {
-  id: string;
-  symbol: string;
-  name: string;
-  image: string;
-  current_price: number;
-  price_change_percentage_24h: number;
-  market_cap: number;
-  total_volume: number;
-}
-
-export const CryptoExplorer = () => {
-  const [cryptos, setCryptos] = useState<Crypto[]>([]);
+export const CryptoExplorer: React.FC = () => {
+  const [cryptos, setCryptos] = useState<CryptoData[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const [sortBy, setSortBy] = useState('market_cap');
-  const [filterMinPrice, setFilterMinPrice] = useState('');
-  const [filterMaxPrice, setFilterMaxPrice] = useState('');
   const [showFilters, setShowFilters] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [filters, setFilters] = useState<FilterState>({
+    sortBy: 'market_cap',
+    sortOrder: 'desc'
+  });
 
   useEffect(() => {
     fetchCryptos();
@@ -45,122 +39,76 @@ export const CryptoExplorer = () => {
     setLoading(false);
   };
 
+  const handleFilterChange = (key: keyof FilterState, value: string[] | string) => {
+    setFilters(prev => ({ ...prev, [key]: value }));
+  };
+
+  const resetFilters = () => {
+    setFilters({
+      sortBy: 'market_cap',
+      sortOrder: 'desc'
+    });
+  };
+
   const filteredCryptos = cryptos
-    .filter(crypto => {
-      const matchesSearch = !searchQuery ||
-        crypto.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        crypto.symbol.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesMinPrice = !filterMinPrice || crypto.current_price >= Number(filterMinPrice);
-      const matchesMaxPrice = !filterMaxPrice || crypto.current_price <= Number(filterMaxPrice);
-      return matchesSearch && matchesMinPrice && matchesMaxPrice;
-    })
     .sort((a, b) => {
-      switch (sortBy) {
-        case 'price': return b.current_price - a.current_price;
-        case 'change': return b.price_change_percentage_24h - a.price_change_percentage_24h;
-        case 'volume': return b.total_volume - a.total_volume;
-        default: return b.market_cap - a.market_cap;
+      const sortValue = filters.sortOrder === 'asc' ? 1 : -1;
+      switch (filters.sortBy) {
+        case 'price': return (b.current_price - a.current_price) * sortValue;
+        case 'change': return (b.price_change_percentage_24h - a.price_change_percentage_24h) * sortValue;
+        case 'volume': return (b.total_volume - a.total_volume) * sortValue;
+        default: return (a.market_cap - b.market_cap) * sortValue;
       }
     });
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white py-12 md:py-24">
-      <div className="container mx-auto px-4">
-        <div className="max-w-6xl mx-auto">
-          <h1 className="text-2xl md:text-4xl font-bold mb-6 md:mb-8">Cryptocurrency Explorer</h1>
+    <div className="min-h-screen bg-gray-900 text-white py-8 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto">
+        <h1 className="text-3xl font-bold mb-8">Cryptocurrency Explorer</h1>
 
-          <div className="mb-8">
-            <form onSubmit={handleSearch} className="flex flex-col md:flex-row gap-4 mb-4">
-              <div className="flex-1">
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search cryptocurrencies..."
-                  className="w-full px-4 py-3 rounded-lg bg-gray-800 border border-gray-700 focus:border-yellow-400 focus:outline-none"
-                />
-              </div>
-              <button
-                type="button"
-                onClick={() => setShowFilters(!showFilters)}
-                className="px-4 py-3 bg-gray-800 text-white rounded-lg border border-gray-700 hover:border-yellow-400 self-start"
-              >
-                <SlidersHorizontal className="w-5 h-5" />
-              </button>
-            </form>
-
-            {showFilters && (
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-gray-800/50 rounded-lg">
-                <div>
-                  <label className="block text-sm text-gray-400 mb-2">Sort By</label>
-                  <select
-                    value={sortBy}
-                    onChange={(e) => setSortBy(e.target.value)}
-                    className="w-full px-3 py-2 rounded bg-gray-700 border border-gray-600"
-                  >
-                    <option value="market_cap">Market Cap</option>
-                    <option value="price">Price</option>
-                    <option value="change">24h Change</option>
-                    <option value="volume">Volume</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm text-gray-400 mb-2">Min Price ($)</label>
-                  <input
-                    type="number"
-                    value={filterMinPrice}
-                    onChange={(e) => setFilterMinPrice(e.target.value)}
-                    className="w-full px-3 py-2 rounded bg-gray-700 border border-gray-600"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm text-gray-400 mb-2">Max Price ($)</label>
-                  <input
-                    type="number"
-                    value={filterMaxPrice}
-                    onChange={(e) => setFilterMaxPrice(e.target.value)}
-                    className="w-full px-3 py-2 rounded bg-gray-700 border border-gray-600"
-                  />
-                </div>
-              </div>
-            )}
+        <div className="mb-8">
+          <div className="flex flex-col sm:flex-row gap-4 mb-4">
+            <SearchBar
+              searchQuery={searchQuery}
+              setSearchQuery={setSearchQuery}
+              handleSearch={handleSearch}
+            />
+            <button
+              type="button"
+              onClick={() => setShowFilters(!showFilters)}
+              className="px-4 py-2 bg-gray-800 border border-gray-700 rounded-md text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <SlidersHorizontal className="w-5 h-5 mr-2 inline-block" />
+              {showFilters ? 'Hide Filters' : 'Show Filters'}
+            </button>
           </div>
 
-          {loading ? (
-            <div className="space-y-4">
-              {[...Array(10)].map((_, i) => (
-                <div key={i} className="animate-pulse bg-gray-800/50 h-16 md:h-20 rounded-lg" />
-              ))}
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {filteredCryptos.map((crypto) => (
-                <div
-                  key={crypto.id}
-                  className="bg-gray-800/50 p-4 rounded-lg border border-gray-700 hover:border-yellow-400/50 transition-colors"
-                >
-                  <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-                    <div className="flex items-center gap-4 w-full">
-                      <img src={crypto.image} alt={crypto.name} className="w-8 h-8" />
-                      <div className="flex-1">
-                        <h3 className="font-semibold">{crypto.name}</h3>
-                        <p className="text-sm text-gray-400">{crypto.symbol.toUpperCase()}</p>
-                      </div>
-                    </div>
-                    <div className="text-right w-full md:w-auto">
-                      <p className="font-semibold">${crypto.current_price.toLocaleString()}</p>
-                      <p className={`text-sm ${crypto.price_change_percentage_24h > 0 ? 'text-green-400' : 'text-red-400'
-                        }`}>
-                        {crypto.price_change_percentage_24h.toFixed(2)}%
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
+          {showFilters && (
+            <FilterSection
+              filters={filters}
+              handleFilterChange={handleFilterChange}
+              resetFilters={resetFilters}
+            />
           )}
         </div>
+
+        {loading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {[...Array(10)].map((_, i) => (
+              <div key={i} className="animate-pulse bg-gray-800 h-48 rounded-lg" />
+            ))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {filteredCryptos.map((crypto) => (
+              <CryptoCard key={crypto.id} crypto={crypto} />
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
 };
+
+export default CryptoExplorer;
+
