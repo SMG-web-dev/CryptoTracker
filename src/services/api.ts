@@ -3,6 +3,23 @@ import { CryptoData } from '../types/crypto';
 
 const COINGECKO_API = 'https://api.coingecko.com/api/v3';
 
+interface CoinGeckoMarketData {
+  id: string;
+  symbol: string;
+  name: string;
+  image: string;
+  current_price: number;
+  market_cap: number;
+  circulating_supply: number;
+  total_volume: number;
+  price_change_percentage_24h: number;
+}
+
+interface CoinGeckoSearchResult {
+  id: string;
+  // otros campos no son necesarios para nuestro uso
+}
+
 export const getBitcoinData = async () => {
   try {
     const [priceData, chartData] = await Promise.all([
@@ -56,7 +73,7 @@ export const getTopCryptos = async (): Promise<CryptoData[]> => {
     });
 
     // Explicitly map and serialize the response data
-    return response.data.map((crypto: any) => ({
+    return response.data.map((crypto: CoinGeckoMarketData) => ({
       id: String(crypto.id),
       symbol: String(crypto.symbol),
       name: String(crypto.name),
@@ -79,8 +96,8 @@ export const searchCryptos = async (query: string): Promise<CryptoData[]> => {
       params: { query }
     });
 
-    const ids = response.data.coins.slice(0, 10).map((coin: any) => coin.id).join(',');
-    
+    const ids = response.data.coins.slice(0, 10).map((coin: CoinGeckoSearchResult) => coin.id).join(',');
+
     if (!ids) return [];
 
     const marketsResponse = await axios.get(`${COINGECKO_API}/coins/markets`, {
@@ -93,7 +110,7 @@ export const searchCryptos = async (query: string): Promise<CryptoData[]> => {
       }
     });
 
-    return marketsResponse.data.map((crypto: any) => ({
+    return marketsResponse.data.map((crypto: CoinGeckoMarketData) => ({
       id: String(crypto.id),
       symbol: String(crypto.symbol),
       name: String(crypto.name),
@@ -110,7 +127,12 @@ export const searchCryptos = async (query: string): Promise<CryptoData[]> => {
   }
 };
 
-export const getWalletBalance = async (address: string, chain: string) => {
+export const getWalletBalance = async (
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  _address: string,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  _chain: string
+) => {
   // Mock data implementation
   return {
     balance: Number((Math.random() * 10).toFixed(8)),

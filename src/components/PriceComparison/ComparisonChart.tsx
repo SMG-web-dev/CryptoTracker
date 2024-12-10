@@ -60,21 +60,27 @@ export const ComparisonChart: React.FC<ComparisonChartProps> = ({
       },
       tooltip: {
         callbacks: {
-          label: (context: any) => `$${context.parsed.y.toLocaleString()}`,
+          label: function (context: { parsed: { y: number } }) {
+            return `$${context.parsed.y.toLocaleString()}`;
+          },
         },
       },
     },
     scales: {
       y: {
+        type: 'linear' as const,
         grid: {
           color: 'rgba(255, 255, 255, 0.1)',
         },
         ticks: {
           color: 'white',
-          callback: (value: number) => `$${value.toLocaleString()}`,
+          callback: function (tickValue: number | string) {
+            return `$${Number(tickValue).toLocaleString()}`;
+          },
         },
       },
       x: {
+        type: 'category' as const,
         grid: {
           color: 'rgba(255, 255, 255, 0.1)',
         },
