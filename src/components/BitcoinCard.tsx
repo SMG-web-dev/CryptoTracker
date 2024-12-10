@@ -114,52 +114,52 @@ export const BitcoinCard = () => {
       highlight={false}
       shadow={false}
     >
-      <div className="bg-gradient-to-br from-gray-700/90 to-gray-800/90 p-6 rounded-3xl backdrop-blur-md border border-gray-600 shadow-xl transition-all duration-300 hover:scale-[1.02]">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center space-x-4">
-            <Bitcoin className="w-16 h-16 text-yellow-400 animate-pulse" />
-            <h2 className="text-2xl font-bold text-white">Bitcoin</h2>
+      <div className="bg-gradient-to-br from-gray-700/90 to-gray-800/90 p-4 sm:p-6 rounded-3xl backdrop-blur-md border border-gray-600 shadow-xl transition-all duration-300 hover:scale-[1.02]">
+        <div className="flex flex-col sm:flex-row items-center justify-between mb-4 sm:mb-6">
+          <div className="flex items-center space-x-4 mb-2 sm:mb-0">
+            <Bitcoin className="w-10 h-10 sm:w-16 sm:h-16 text-yellow-400 animate-pulse" />
+            <h2 className="text-xl sm:text-2xl font-bold text-white">Bitcoin</h2>
           </div>
           {data?.change_24h && (
             data.change_24h > 0 ? (
-              <TrendingUp className="w-10 h-10 text-green-400 animate-bounce" />
+              <TrendingUp className="w-6 h-6 sm:w-10 sm:h-10 text-green-400 animate-bounce" />
             ) : (
-              <TrendingDown className="w-10 h-10 text-red-400 animate-bounce" />
+              <TrendingDown className="w-6 h-6 sm:w-10 sm:h-10 text-red-400 animate-bounce" />
             )
           )}
         </div>
 
-        <div className="grid grid-cols-2 gap-4 mb-6">
+        <div className="grid grid-cols-2 gap-2 sm:gap-4 mb-4 sm:mb-6">
           <div>
-            <p className="text-gray-400 text-sm">Current Price</p>
-            <p className="text-4xl font-extrabold text-yellow-300">
+            <p className="text-xs sm:text-sm text-gray-400">Current Price</p>
+            <p className="text-2xl sm:text-4xl font-extrabold text-yellow-300">
               ${data?.price.toLocaleString(undefined, { maximumFractionDigits: 2 })}
             </p>
           </div>
           <div className="text-right">
-            <p className="text-gray-400 text-sm">24h Change</p>
-            <p className={`text-3xl font-bold ${data?.change_24h && data.change_24h > 0 ? 'text-green-400' : 'text-red-400'}`}>
+            <p className="text-xs sm:text-sm text-gray-400">24h Change</p>
+            <p className={`text-xl sm:text-3xl font-bold ${data?.change_24h && data.change_24h > 0 ? 'text-green-400' : 'text-red-400'}`}>
               {data?.change_24h?.toFixed(2)}%
             </p>
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-4 mb-6">
+        <div className="grid grid-cols-2 gap-2 sm:gap-4 mb-4 sm:mb-6">
           <div>
-            <p className="text-gray-400 text-sm">Market Cap</p>
-            <p className="text-2xl font-semibold text-white">
+            <p className="text-xs sm:text-sm text-gray-400">Market Cap</p>
+            <p className="text-xl sm:text-2xl font-semibold text-white">
               ${data?.market_cap && (data.market_cap / 1e9).toFixed(2)}B
             </p>
           </div>
           <div className="text-right">
-            <p className="text-gray-400 text-sm">Last Updated</p>
-            <p className="text-xl font-medium text-gray-300">
+            <p className="text-xs sm:text-sm text-gray-400">Last Updated</p>
+            <p className="text-base sm:text-xl font-medium text-gray-300">
               {new Date().toLocaleTimeString()}
             </p>
           </div>
         </div>
 
-        <div className="h-48 w-full bg-transparent">
+        <div className="h-32 sm:h-48 w-full bg-transparent">
           <Line data={chartData} options={chartOptions} />
         </div>
       </div>
