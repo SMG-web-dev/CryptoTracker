@@ -12,19 +12,19 @@ export const Header = () => {
 
     return (
         <nav className="backdrop-blur-md bg-gray-900/80 border-b border-gray-800/50 fixed top-0 left-0 right-0 z-50 shadow-lg">
-            <div className="container mx-auto px-4">
-                <div className="flex items-center justify-between h-16 sm:h-18 lg:h-20 relative">
-                    <Link to="/" className="flex items-center gap-2 sm:gap-3">
+            <div className="container mx-auto px-4 md:px-6 lg:px-8">
+                <div className="flex items-center justify-between h-14 md:h-16 lg:h-18 relative">
+                    <Link to="/" className="flex items-center gap-2">
                         <div className="bg-gradient-to-r from-yellow-500 to-yellow-300 p-1 rounded-lg">
-                            <img src={favicon} alt="Logo" className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8" />
+                            <img src={favicon} alt="Logo" className="w-5 h-5 md:w-6 md:h-6 lg:w-7 lg:h-7" />
                         </div>
-                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-200 font-bold text-lg sm:text-xl lg:text-2xl">
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-200 font-bold text-base md:text-lg lg:text-xl">
                             CryptoTracker
                         </span>
                     </Link>
 
                     {/* Desktop/Tablet Navigation */}
-                    <div className="hidden sm:flex items-center gap-3 lg:gap-6">
+                    <div className="hidden md:flex items-center gap-4 lg:gap-6">
                         <Link
                             to="/explorer"
                             className="group flex items-center gap-2 px-3 lg:px-4 py-2 text-gray-300 hover:text-yellow-400 transition-all duration-300"
@@ -49,7 +49,7 @@ export const Header = () => {
                     </div>
 
                     {/* Mobile Menu Toggle */}
-                    <div className="sm:hidden">
+                    <div className="md:hidden">
                         <button
                             onClick={toggleMenu}
                             className="text-gray-300 hover:text-yellow-400 transition-colors p-2 rounded-lg hover:bg-gray-800/50"
@@ -60,7 +60,7 @@ export const Header = () => {
 
                     {/* Mobile Dropdown Menu */}
                     {isMenuOpen && (
-                        <div className="absolute top-full left-0 right-0 backdrop-blur-lg bg-gray-900/95 sm:hidden rounded-b-xl shadow-xl border-t border-gray-800/50">
+                        <div className="absolute top-full left-0 right-0 backdrop-blur-lg bg-gray-900/95 md:hidden rounded-b-xl shadow-xl border-t border-gray-800/50">
                             <div className="flex flex-col p-2">
                                 <Link
                                     to="/explorer"
